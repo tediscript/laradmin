@@ -1,27 +1,37 @@
-# Skill Invocation Rules
+# Skill Rules
 
-## Slash Command Convention
+## Slash Commands
 
-When the user types a message starting with `/` followed by a skill name, treat it as an explicit skill invocation command. Match it to the corresponding skill name found in `.agents/skills/` and announce activation.
-
-**Available skills** are determined dynamically by scanning `.agents/skills/<skill-name>/SKILL.md`. Any folder under `.agents/skills/` containing a `SKILL.md` is a valid skill.
+User types `/<skill>` → explicit invoke. Match `.agents/skills/<skill-name>/SKILL.md`. Folder w/ `SKILL.md` = valid skill.
 
 ## Activation Announcement
 
-**ALWAYS** announce skill activation at the very start of your response using this format:
+**ALWAYS** lead response:
 
 ```
 🔧 Skill activated: **triage**
 ```
 
-This applies in ALL cases:
-- When the user uses a `/command` explicitly (e.g., `/triage`, `/tdd`, `/diagnose`)
-- When you infer a skill should be used from natural language (e.g., "triage this bug", "use TDD", "diagnose this")
+Always:
+- `/command` used (e.g., `/triage`, `/tdd`, `/diagnose`)
+- NL inference (e.g., "triage this bug", "use TDD")
 
-## Natural Language Matching
+## NL Matching
 
-If the user doesn't use a `/command` but their request clearly matches a skill's purpose, activate the skill AND announce it. Always announce the skill even when inferred from natural language.
+Request matches skill purpose → activate + announce. No exceptions.
+
+## Always-Active
+
+Active w/o invocation:
+
+### smart-commit
+
+Never `git add .` / `git add -A` / `git add --all`. Stage specific files. Group related changes. See `.agents/skills/smart-commit/SKILL.md`.
+
+### caveman
+
+Ultra-compressed. Drop articles/filler/pleasantries/hedging. Fragments OK. Tech terms exact. Code blocks unchanged. See `.agents/skills/caveman/SKILL.md`.
 
 ## Skill Discovery
 
-If unsure which skills are available, list `.agents/skills/` to find all installed skills.
+Unsure → list `.agents/skills/`.
