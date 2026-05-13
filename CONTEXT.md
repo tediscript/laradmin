@@ -6,16 +6,16 @@ Reusable starter kit for building admin-heavy web applications. Primarily admin 
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Laravel 13 (v13.6.0 skeleton, v13.9.0 framework) |
-| PHP | 8.5+ |
-| Frontend | Blade + Alpine.js + Tailwind CSS |
-| Asset bundler | Vite 8 |
-| Auth | Laravel Breeze (Blade stack) |
-| Database | SQLite (default, swap to MySQL/Postgres as needed) |
-| Testing | Pest 4.x |
-| API | `routes/api.php` ready (add Sanctum for token auth) |
+| Layer         | Technology                                          |
+|---------------|-----------------------------------------------------|
+| Framework     | Laravel 13 (v13.6.0 skeleton, v13.9.0 framework)    |
+| PHP           | 8.5+                                                |
+| Frontend      | Blade + Alpine.js + Tailwind CSS                    |
+| Asset bundler | Vite 8                                              |
+| Auth          | Laravel Breeze (Blade stack)                        |
+| Database      | SQLite (default, swap to MySQL/Postgres as needed)  |
+| Testing       | Pest 4.x                                            |
+| API           | `routes/api.php` ready (add Sanctum for token auth) |
 
 ## Glossary
 
