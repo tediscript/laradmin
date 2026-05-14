@@ -19,7 +19,12 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create post permissions
-        $permissions = ['post.view', 'post.create', 'post.update', 'post.delete'];
+        $postPermissions = ['post.view', 'post.create', 'post.update', 'post.delete'];
+
+        // Create user permissions
+        $userPermissions = ['user.view', 'user.create', 'user.update', 'user.delete'];
+
+        $permissions = array_merge($postPermissions, $userPermissions);
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);

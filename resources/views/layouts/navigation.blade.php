@@ -20,9 +20,11 @@
                         {{ __('Posts') }}
                     </x-nav-link>
                     @endcan
+                    @can('user.view')
                     <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                         {{ __('Users') }}
                     </x-nav-link>
+                    @endcan
                 </div>
             </div>
 

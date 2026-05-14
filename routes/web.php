@@ -32,7 +32,22 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::delete('posts/{post}', [PostController::class, 'destroy'])
         ->middleware('permission:post.delete')
         ->name('posts.destroy');
-    Route::resource('users', UserController::class);
+    Route::middleware('permission:user.view')->group(function () {
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
+    });
+    Route::middleware('permission:user.create')->group(function () {
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
+    });
+    Route::middleware('permission:user.update')->group(function () {
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
+    });
+    Route::delete('users/{user}', [UserController::class, 'destroy'])
+        ->middleware('permission:user.delete')
+        ->name('users.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
