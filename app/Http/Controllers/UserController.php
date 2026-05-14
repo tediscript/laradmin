@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -45,7 +46,9 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        return view('users.edit', compact('user'));
+        $roles = Role::orderBy('name')->get();
+
+        return view('users.edit', compact('user', 'roles'));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
@@ -65,6 +68,10 @@ class UserController extends Controller
         unset($validated['email_verified']);
 
         $user->update($validated);
+
+        if (array_key_exists('roles', $validated)) {
+            $user->syncRoles($validated['roles']);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('status', 'User updated successfully.');

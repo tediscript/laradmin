@@ -1,6 +1,20 @@
 <?php
 
 use App\Models\User;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+beforeEach(function () {
+    $userPermissions = ['user.view', 'user.create', 'user.update', 'user.delete'];
+    foreach ($userPermissions as $perm) {
+        Permission::firstOrCreate(['name' => $perm]);
+    }
+
+    $this->admin = User::factory()->create();
+    $role = Role::firstOrCreate(['name' => 'admin']);
+    $role->givePermissionTo($userPermissions);
+    $this->admin->assignRole($role);
+});
 
 test('guests cannot access users', function () {
     $this->get('/admin/users')->assertRedirect('/login');
@@ -9,28 +23,23 @@ test('guests cannot access users', function () {
 });
 
 test('index displays users table', function () {
-    $user = User::factory()->create();
     User::factory()->count(3)->create();
 
-    $response = $this->actingAs($user)->get('/admin/users');
+    $response = $this->actingAs($this->admin)->get('/admin/users');
 
     $response->assertOk();
     $response->assertSee('Users');
 });
 
 test('create displays the form', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->get('/admin/users/create');
+    $response = $this->actingAs($this->admin)->get('/admin/users/create');
 
     $response->assertOk();
     $response->assertSee('Create User');
 });
 
 test('store creates a new user', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/admin/users', [
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
         'password' => 'password123',
@@ -47,17 +56,15 @@ test('store creates a new user', function () {
 });
 
 test('store validates required fields', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/admin/users', []);
+    $response = $this->actingAs($this->admin)->post('/admin/users', []);
 
     $response->assertSessionHasErrors(['name', 'email', 'password']);
 });
 
 test('store validates unique email', function () {
-    $user = User::factory()->create(['email' => 'taken@example.com']);
+    User::factory()->create(['email' => 'taken@example.com']);
 
-    $response = $this->actingAs($user)->post('/admin/users', [
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
         'name' => 'New User',
         'email' => 'taken@example.com',
         'password' => 'password123',
@@ -68,9 +75,7 @@ test('store validates unique email', function () {
 });
 
 test('store validates password confirmation', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/admin/users', [
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
         'password' => 'password123',
@@ -81,31 +86,96 @@ test('store validates password confirmation', function () {
 });
 
 test('show displays user detail', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create(['name' => 'Jane Doe']);
 
-    $response = $this->actingAs($user)->get("/admin/users/{$targetUser->id}");
+    $response = $this->actingAs($this->admin)->get("/admin/users/{$targetUser->id}");
 
     $response->assertOk();
     $response->assertSee('Jane Doe');
 });
 
 test('edit displays the form with user data', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create(['name' => 'Edit Me']);
 
-    $response = $this->actingAs($user)->get("/admin/users/{$targetUser->id}/edit");
+    $response = $this->actingAs($this->admin)->get("/admin/users/{$targetUser->id}/edit");
 
     $response->assertOk();
     $response->assertSee('Edit User');
     $response->assertSee('Edit Me');
 });
 
+test('edit displays roles checkboxes', function () {
+    $targetUser = User::factory()->create();
+    Role::create(['name' => 'editor']);
+    Role::create(['name' => 'manager']);
+
+    $response = $this->actingAs($this->admin)->get("/admin/users/{$targetUser->id}/edit");
+
+    $response->assertSee('editor');
+    $response->assertSee('manager');
+});
+
+test('update can assign roles to user', function () {
+    $targetUser = User::factory()->create();
+    Role::create(['name' => 'editor']);
+    Role::create(['name' => 'manager']);
+
+    $response = $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
+        'name' => $targetUser->name,
+        'email' => $targetUser->email,
+        'password' => '',
+        'roles' => ['editor', 'manager'],
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $targetUser->refresh();
+    expect($targetUser->hasRole('editor'))->toBeTrue();
+    expect($targetUser->hasRole('manager'))->toBeTrue();
+});
+
+test('update can sync roles for user', function () {
+    $targetUser = User::factory()->create();
+    Role::create(['name' => 'editor']);
+    $managerRole = Role::create(['name' => 'manager']);
+    $targetUser->assignRole($managerRole);
+
+    $response = $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
+        'name' => $targetUser->name,
+        'email' => $targetUser->email,
+        'password' => '',
+        'roles' => ['editor'],
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $targetUser->refresh();
+    expect($targetUser->hasRole('editor'))->toBeTrue();
+    expect($targetUser->hasRole('manager'))->toBeFalse();
+});
+
+test('update can remove all roles from user', function () {
+    $targetUser = User::factory()->create();
+    $editorRole = Role::create(['name' => 'editor']);
+    $targetUser->assignRole($editorRole);
+
+    $response = $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
+        'name' => $targetUser->name,
+        'email' => $targetUser->email,
+        'password' => '',
+        'roles' => [],
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $targetUser->refresh();
+    expect($targetUser->roles)->toBeEmpty();
+});
+
 test('update modifies the user', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create();
 
-    $response = $this->actingAs($user)->put("/admin/users/{$targetUser->id}", [
+    $response = $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
         'name' => 'Updated Name',
         'email' => 'updated@example.com',
         'password' => '',
@@ -120,11 +190,10 @@ test('update modifies the user', function () {
 });
 
 test('update can change password', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create();
     $oldPasswordHash = $targetUser->password;
 
-    $response = $this->actingAs($user)->put("/admin/users/{$targetUser->id}", [
+    $response = $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
         'name' => $targetUser->name,
         'email' => $targetUser->email,
         'password' => 'newpassword123',
@@ -138,9 +207,7 @@ test('update can change password', function () {
 });
 
 test('store creates verified user when email_verified is checked', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/admin/users', [
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
         'name' => 'Verified User',
         'email' => 'verified@example.com',
         'password' => 'password123',
@@ -155,9 +222,7 @@ test('store creates verified user when email_verified is checked', function () {
 });
 
 test('store creates unverified user when email_verified is unchecked', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user)->post('/admin/users', [
+    $this->actingAs($this->admin)->post('/admin/users', [
         'name' => 'Unverified User',
         'email' => 'unverified@example.com',
         'password' => 'password123',
@@ -169,10 +234,9 @@ test('store creates unverified user when email_verified is unchecked', function 
 });
 
 test('update can verify an unverified user', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create(['email_verified_at' => null]);
 
-    $this->actingAs($user)->put("/admin/users/{$targetUser->id}", [
+    $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
         'name' => $targetUser->name,
         'email' => $targetUser->email,
         'password' => '',
@@ -184,10 +248,9 @@ test('update can verify an unverified user', function () {
 });
 
 test('update can unverify a verified user', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create(['email_verified_at' => now()]);
 
-    $this->actingAs($user)->put("/admin/users/{$targetUser->id}", [
+    $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
         'name' => $targetUser->name,
         'email' => $targetUser->email,
         'password' => '',
@@ -198,10 +261,9 @@ test('update can unverify a verified user', function () {
 });
 
 test('destroy deletes the user', function () {
-    $user = User::factory()->create();
     $targetUser = User::factory()->create();
 
-    $response = $this->actingAs($user)->delete("/admin/users/{$targetUser->id}");
+    $response = $this->actingAs($this->admin)->delete("/admin/users/{$targetUser->id}");
 
     $response->assertRedirect('/admin/users');
     $response->assertSessionHas('status', 'User deleted successfully.');
