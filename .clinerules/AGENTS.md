@@ -11,3 +11,7 @@ Default triage label vocabulary (recorded as `Status:` lines in issue files). Se
 ### Domain docs
 
 Single-context layout: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Design system
+
+UI design tokens, component inventory, layout patterns, and conventions live in `DESIGN.md`. See it before creating or modifying Blade components or Tailwind styles.
