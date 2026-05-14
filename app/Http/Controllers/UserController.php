@@ -13,9 +13,32 @@ class UserController extends Controller
 {
     public function index(): View
     {
-        $users = User::latest()->paginate(10);
+        $sortBy = request('sort_by', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+        $search = request('search');
 
-        return view('users.index', compact('users'));
+        $allowedSortColumns = ['name', 'email', 'email_verified_at', 'created_at'];
+
+        if (! in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $users = User::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate(10)
+            ->appends(request()->query());
+
+        return view('users.index', compact('users', 'sortBy', 'sortDirection', 'search'));
     }
 
     public function create(): View
