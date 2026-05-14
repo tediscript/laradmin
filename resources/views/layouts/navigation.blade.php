@@ -95,9 +95,11 @@
                 {{ __('Posts') }}
             </x-responsive-nav-link>
             @endcan
+            @can('user.view')
             <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                 {{ __('Users') }}
             </x-responsive-nav-link>
+            @endcan
             @can('role.view')
             <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                 {{ __('Roles') }}
