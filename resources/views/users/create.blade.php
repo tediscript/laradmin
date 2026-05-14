@@ -14,7 +14,7 @@
                     <div class="max-w-xl">
                         @include('users.partials.form', ['user' => null])
 
-                        <div class="flex items-center justify-end gap-4 mt-6">
+                        <div class="flex items-center justify-end gap-4 mt-6 pt-6 border-t border-gray-200">
                             <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 shadow-sm hover:bg-gray-50 rounded-md font-semibold text-xs uppercase tracking-widest focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 transition duration-150">
                                 Cancel
                             </a>
