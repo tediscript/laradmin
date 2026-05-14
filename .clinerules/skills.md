@@ -28,10 +28,6 @@ Active w/o invocation:
 
 Never `git add .` / `git add -A` / `git add --all`. Stage specific files. Group related changes. See `.agents/skills/smart-commit/SKILL.md`.
 
-### caveman
-
-Ultra-compressed. Drop articles/filler/pleasantries/hedging. Fragments OK. Tech terms exact. Code blocks unchanged. See `.agents/skills/caveman/SKILL.md`.
-
 ## Skill Discovery
 
 Unsure → list `.agents/skills/`.
