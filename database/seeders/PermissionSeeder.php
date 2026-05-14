@@ -24,7 +24,13 @@ class PermissionSeeder extends Seeder
         // Create user permissions
         $userPermissions = ['user.view', 'user.create', 'user.update', 'user.delete'];
 
-        $permissions = array_merge($postPermissions, $userPermissions);
+        // Create role permissions
+        $rolePermissions = ['role.view', 'role.create', 'role.update', 'role.delete'];
+
+        // Create permission permissions
+        $permissionPermissions = ['permission.view', 'permission.create', 'permission.update', 'permission.delete'];
+
+        $permissions = array_merge($postPermissions, $userPermissions, $rolePermissions, $permissionPermissions);
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
