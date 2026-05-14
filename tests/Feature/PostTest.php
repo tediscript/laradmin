@@ -2,6 +2,11 @@
 
 use App\Models\Post;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
+
+beforeEach(function () {
+    $this->seed(PermissionSeeder::class);
+});
 
 test('guests cannot access posts', function () {
     $this->get('/admin/posts')->assertRedirect('/login');
@@ -11,6 +16,7 @@ test('guests cannot access posts', function () {
 
 test('index displays posts table', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     Post::factory()->count(3)->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)->get('/admin/posts');
@@ -21,6 +27,7 @@ test('index displays posts table', function () {
 
 test('create displays the form', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $response = $this->actingAs($user)->get('/admin/posts/create');
 
@@ -30,6 +37,7 @@ test('create displays the form', function () {
 
 test('store creates a new post', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $response = $this->actingAs($user)->post('/admin/posts', [
         'title' => 'My First Post',
@@ -51,6 +59,7 @@ test('store creates a new post', function () {
 
 test('store validates required fields', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $response = $this->actingAs($user)->post('/admin/posts', []);
 
@@ -59,6 +68,7 @@ test('store validates required fields', function () {
 
 test('show displays post detail', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     $post = Post::factory()->create(['user_id' => $user->id, 'title' => 'Test Post']);
 
     $response = $this->actingAs($user)->get("/admin/posts/{$post->id}");
@@ -69,6 +79,7 @@ test('show displays post detail', function () {
 
 test('edit displays the form with post data', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     $post = Post::factory()->create(['user_id' => $user->id, 'title' => 'Edit Me']);
 
     $response = $this->actingAs($user)->get("/admin/posts/{$post->id}/edit");
@@ -80,6 +91,7 @@ test('edit displays the form with post data', function () {
 
 test('update modifies the post', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     $post = Post::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)->put("/admin/posts/{$post->id}", [
@@ -99,6 +111,7 @@ test('update modifies the post', function () {
 
 test('destroy soft deletes the post', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     $post = Post::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)->delete("/admin/posts/{$post->id}");
@@ -113,6 +126,7 @@ test('destroy soft deletes the post', function () {
 
 test('slug is auto-generated from title', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)->post('/admin/posts', [
         'title' => 'Hello World Example',
@@ -124,6 +138,7 @@ test('slug is auto-generated from title', function () {
 
 test('slug handles duplicates', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
     Post::factory()->create(['title' => 'Duplicate', 'slug' => 'duplicate', 'user_id' => $user->id]);
 
     $this->actingAs($user)->post('/admin/posts', [
@@ -136,6 +151,7 @@ test('slug handles duplicates', function () {
 
 test('store defaults published to false when unchecked', function () {
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)->post('/admin/posts', [
         'title' => 'Draft Post',
