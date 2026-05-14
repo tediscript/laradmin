@@ -52,15 +52,9 @@ Tailwind defaults. No custom palette. Documenting **which tokens used where**, n
 | `gray-800` | Headings, primary button bg |
 | `gray-900` | Body text                   |
 
-### Indigo (accent)
+### Monochrome palette — gray only. No accent color.
 
-| Token        | Usage                                               |
-|--------------|-----------------------------------------------------|
-| `indigo-400` | Nav link active border (desktop)                    |
-| `indigo-500` | Focus rings, checkbox active, input focus border    |
-| `indigo-600` | Checkbox checked                                    |
-| `indigo-700` | Responsive nav active text, nav active border focus |
-| `indigo-50`  | Responsive nav active background                    |
+All interactive states (focus rings, active borders, nav states) use gray tokens from the table above. Success messages use `text-gray-700`. Feature card icons use `bg-gray-100` / `text-gray-700`.
 
 ### Red (destructive)
 
@@ -69,12 +63,6 @@ Tailwind defaults. No custom palette. Documenting **which tokens used where**, n
 | `red-500` | Danger hover, focus ring |
 | `red-600` | Danger button bg         |
 | `red-700` | Danger button active     |
-
-### Green (success)
-
-| Token       | Usage               |
-|-------------|---------------------|
-| `green-600` | Success messages    |
 
 ## Typography
 
@@ -100,7 +88,7 @@ fontFamily: { sans: ['Figtree', ...defaultTheme.fontFamily.sans] }
 | Links/buttons       | `text-xs uppercase tracking-widest font-semibold`               |
 | Small text          | `text-sm text-gray-600`                                         |
 | Error messages      | `text-sm text-red-600`                                          |
-| Success messages    | `text-sm text-green-600` / `font-medium text-sm text-green-600` |
+| Success messages    | `text-sm text-gray-700` / `font-medium text-sm text-gray-700` |
 
 ## Component Inventory
 
@@ -110,8 +98,8 @@ All in `resources/views/components/`.
 
 | Component              | Variant     | Key Classes                                                                                |
 |------------------------|-------------|--------------------------------------------------------------------------------------------|
-| `<x-primary-button>`   | Submit      | `bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 rounded-md` |
-| `<x-secondary-button>` | Cancel      | `bg-white border-gray-300 text-gray-700 shadow-sm hover:bg-gray-50 rounded-md`             |
+| `<x-primary-button>`   | Submit      | `bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:ring-gray-700 rounded-md` |
+| `<x-secondary-button>` | Cancel      | `bg-white border-gray-300 text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-gray-700 rounded-md` |
 | `<x-danger-button>`    | Destructive | `bg-red-600 text-white hover:bg-red-500 active:bg-red-700 rounded-md`                      |
 
 Common: `inline-flex items-center px-4 py-2 font-semibold text-xs uppercase tracking-widest focus:ring-2 focus:ring-offset-2 transition duration-150`.
@@ -120,11 +108,11 @@ Common: `inline-flex items-center px-4 py-2 font-semibold text-xs uppercase trac
 
 | Component         | Props      | Notes                                                                                |
 |-------------------|------------|--------------------------------------------------------------------------------------|
-| `<x-text-input>`  | `disabled` | `border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm` |
+| `<x-text-input>`  | `disabled` | `border-gray-300 focus:border-gray-700 focus:ring-gray-700 rounded-md shadow-sm` |
 | `<x-input-label>` | `value`    | `block font-medium text-sm text-gray-700`                                            |
 | `<x-input-error>` | `messages` | `text-sm text-red-600 space-y-1`, renders `<ul><li>` per message                     |
 
-Checkboxes: raw `<input type="checkbox">` with `rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500`.
+Checkboxes: raw `<input type="checkbox">` with `rounded border-gray-300 text-gray-700 shadow-sm focus:ring-gray-700`.
 
 ### Layout
 
@@ -236,7 +224,7 @@ All via Alpine.js `x-transition`:
 1. New component → `resources/views/components/<name>.blade.php`
 2. Use `$attributes->merge()` for class override support
 3. Props via `@props([...])`
-4. Palette: gray + indigo accent + red destructive + green success
+4. Palette: gray monochrome + red destructive
 5. Card pattern: `sm:rounded-lg shadow-sm`
 6. Interactive states: Tailwind transitions
 7. Mobile-first, `sm:` breakpoint minimum

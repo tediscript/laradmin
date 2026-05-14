@@ -24,7 +24,7 @@
                 content: '';
                 position: absolute;
                 inset: 0;
-                background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 163, 74, 0.12), transparent);
+                background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(55, 65, 81, 0.08), transparent);
                 pointer-events: none;
             }
         </style>
@@ -66,13 +66,13 @@
             <!-- Hero -->
             <main class="relative z-10 flex flex-col items-center justify-center px-6 pt-16 pb-20 sm:pt-24 sm:pb-28 text-center">
                 <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3.5 py-1 text-xs font-medium text-gray-600 shadow-sm">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-700"></span>
                     Laravel {{ app()->version() }} · Open Source
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 max-w-3xl leading-[1.1]">
                     Build admin panels<br>
-                    <span class="text-green-600">without the boilerplate</span>
+                    <span class="text-gray-700">without the boilerplate</span>
                 </h1>
 
                 <p class="mt-5 text-base sm:text-lg text-gray-500 max-w-xl leading-relaxed">
@@ -108,22 +108,22 @@
                 <!-- Feature cards -->
                 <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
                     <div class="rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm p-5 text-left shadow-sm">
-                        <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mb-3">
-                            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
+                        <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
+                            <svg class="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
                         </div>
                         <h3 class="text-sm font-semibold text-gray-900">Blade + Alpine.js</h3>
                         <p class="mt-1 text-xs text-gray-500 leading-relaxed">Server-rendered with sprinkles of reactivity. No SPA complexity.</p>
                     </div>
                     <div class="rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm p-5 text-left shadow-sm">
-                        <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mb-3">
-                            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                        <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
+                            <svg class="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                         </div>
                         <h3 class="text-sm font-semibold text-gray-900">Auth Built-in</h3>
                         <p class="mt-1 text-xs text-gray-500 leading-relaxed">Laravel Breeze pre-installed. Login, register, password reset ready.</p>
                     </div>
                     <div class="rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm p-5 text-left shadow-sm">
-                        <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mb-3">
-                            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                        <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
+                            <svg class="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
                         </div>
                         <h3 class="text-sm font-semibold text-gray-900">Rapid Dev</h3>
                         <p class="mt-1 text-xs text-gray-500 leading-relaxed">Tailwind CSS, Pest testing, Vite. Everything configured, nothing to set up.</p>
