@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Permission;
@@ -14,7 +13,7 @@ class RoleController extends Controller
 {
     public function index(): View
     {
-        $roles = Role::with('permissions', 'users')->paginate(10);
+        $roles = Role::with('permissions')->paginate(10);
 
         return view('roles.index', compact('roles'));
     }
@@ -42,13 +41,11 @@ class RoleController extends Controller
 
     public function edit(Role $role): View
     {
-        $role->load('users', 'permissions');
+        $role->load('permissions');
 
         $permissions = Permission::all()->groupBy(fn ($permission) => explode('.', $permission->name)[0]);
 
-        $users = User::orderBy('name')->get();
-
-        return view('roles.edit', compact('role', 'permissions', 'users'));
+        return view('roles.edit', compact('role', 'permissions'));
     }
 
     public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
@@ -58,8 +55,6 @@ class RoleController extends Controller
         $role->update(['name' => $validated['name']]);
 
         $role->syncPermissions($validated['permissions'] ?? []);
-
-        $role->users()->sync($validated['users'] ?? []);
 
         return redirect()->route('admin.roles.index')
             ->with('status', 'Role updated successfully.');

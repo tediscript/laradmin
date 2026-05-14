@@ -55,25 +55,6 @@
                                 <x-input-error :messages="$errors->get('permissions')" class="mt-2" />
                             </div>
 
-                            <div>
-                                <x-input-label value="Assigned Users" />
-
-                                <div class="mt-2 max-h-64 overflow-y-auto border border-gray-200 rounded-md p-3">
-                                    @foreach($users as $user)
-                                        <label class="flex items-center gap-2 py-1">
-                                            <input
-                                                type="checkbox"
-                                                name="users[]"
-                                                value="{{ $user->id }}"
-                                                class="rounded border-gray-300 text-gray-800 shadow-sm focus:ring-gray-700"
-                                                @if(in_array($user->id, old('users', $role->users->pluck('id')->toArray()))) checked @endif
-                                            />
-                                            <span class="text-sm text-gray-600">{{ $user->name }} <span class="text-gray-400">({{ $user->email }})</span></span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                                <x-input-error :messages="$errors->get('users')" class="mt-2" />
-                            </div>
                         </div>
 
                         <div class="flex items-center justify-end gap-4 mt-6">

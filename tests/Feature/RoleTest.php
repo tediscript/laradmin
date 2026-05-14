@@ -56,15 +56,11 @@ test('role can be updated', function () {
     $permission = Permission::firstOrCreate(['name' => 'post.view']);
     $role->givePermissionTo($permission);
 
-    $user = User::factory()->create();
-    $role->users()->attach($user);
-
     $response = $this
         ->actingAs($this->admin)
         ->put("/admin/roles/{$role->id}", [
             'name' => 'editor-updated',
             'permissions' => ['post.view'],
-            'users' => [$user->id],
         ]);
 
     $response
@@ -74,7 +70,6 @@ test('role can be updated', function () {
     $role->refresh();
     $this->assertSame('editor-updated', $role->name);
     $this->assertTrue($role->hasPermissionTo('post.view'));
-    $this->assertTrue($role->users->contains($user));
 });
 
 test('role permissions can be synced', function () {
@@ -89,7 +84,6 @@ test('role permissions can be synced', function () {
         ->put("/admin/roles/{$role->id}", [
             'name' => 'viewer',
             'permissions' => ['post.create'],
-            'users' => [],
         ]);
 
     $response
@@ -125,30 +119,6 @@ test('role name must be unique on create', function () {
         ]);
 
     $response->assertSessionHasErrors('name');
-});
-
-test('role users can be unassigned', function () {
-    $role = Role::firstOrCreate(['name' => 'removable-users']);
-    $user = User::factory()->create();
-    $role->users()->attach($user);
-
-    $this->assertTrue($role->users->contains($user));
-
-    $response = $this
-        ->actingAs($this->admin)
-        ->put("/admin/roles/{$role->id}", [
-            'name' => 'removable-users',
-            'permissions' => [],
-            'users' => [],
-        ]);
-
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/admin/roles');
-
-    $role->refresh();
-    $this->assertFalse($role->users->contains($user));
-    $this->assertCount(0, $role->users);
 });
 
 test('role edit page is displayed', function () {

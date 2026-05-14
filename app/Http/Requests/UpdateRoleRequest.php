@@ -22,8 +22,6 @@ class UpdateRoleRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', 'unique:roles,name,'.$this->role->id],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['string', 'in:'.Permission::pluck('name')->implode(',')],
-            'users' => ['nullable', 'array'],
-            'users.*' => ['exists:users,id'],
         ];
     }
 }
