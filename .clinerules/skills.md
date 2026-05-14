@@ -1,33 +1,16 @@
-# Skill Rules
+# Skills
 
-## Slash Commands
+## Invoke
+`/<name>` → `.agents/skills/<name>/SKILL.md`. Valid = folder w/ `SKILL.md`.
 
-User types `/<skill>` → explicit invoke. Match `.agents/skills/<skill-name>/SKILL.md`. Folder w/ `SKILL.md` = valid skill.
+## Activate
+Lead: `🔧 Skill activated: **<name>**` — `/command` or NL match. Always.
 
-## Activation Announcement
+## NL Match
+Request ≈ skill purpose → activate + announce. No exceptions.
 
-**ALWAYS** lead response:
+## Always-On: smart-commit
+No `git add .`/`-A`/`--all`. Stage specific. Group related. See `.agents/skills/smart-commit/SKILL.md`.
 
-```
-🔧 Skill activated: **triage**
-```
-
-Always:
-- `/command` used (e.g., `/triage`, `/tdd`, `/diagnose`)
-- NL inference (e.g., "triage this bug", "use TDD")
-
-## NL Matching
-
-Request matches skill purpose → activate + announce. No exceptions.
-
-## Always-Active
-
-Active w/o invocation:
-
-### smart-commit
-
-Never `git add .` / `git add -A` / `git add --all`. Stage specific files. Group related changes. See `.agents/skills/smart-commit/SKILL.md`.
-
-## Skill Discovery
-
-Unsure → list `.agents/skills/`.
+## Lost?
+→ list `.agents/skills/`.
