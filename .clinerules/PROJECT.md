@@ -15,3 +15,7 @@ Single-context layout: one `CONTEXT.md` and `docs/adr/` at the repo root. See `d
 ### Design system
 
 UI design tokens, component inventory, layout patterns, and conventions live in `DESIGN.md`. See it before creating or modifying Blade components or Tailwind styles.
+
+### Laravel Boost
+
+Laravel Boost MCP tools and Laravel-specific conventions. See `AGENTS.md`.
