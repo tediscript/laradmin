@@ -12,9 +12,40 @@ class PostController extends Controller
 {
     public function index(): View
     {
-        $posts = Post::with('user')->latest()->paginate(10);
+        $sortBy = request('sort_by', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+        $search = request('search');
 
-        return view('posts.index', compact('posts'));
+        $allowedSortColumns = ['title', 'published', 'created_at', 'user_name'];
+
+        if (! in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $posts = Post::query()
+            ->with('user')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('body', 'like', "%{$search}%");
+                });
+            })
+            ->when($sortBy === 'user_name', function ($query) use ($sortDirection) {
+                $query->join('users', 'posts.user_id', '=', 'users.id')
+                    ->orderBy('users.name', $sortDirection)
+                    ->select('posts.*');
+            })
+            ->when($sortBy !== 'user_name', function ($query) use ($sortBy, $sortDirection) {
+                $query->orderBy($sortBy, $sortDirection);
+            })
+            ->paginate(10)
+            ->appends(request()->query());
+
+        return view('posts.index', compact('posts', 'sortBy', 'sortDirection', 'search'));
     }
 
     public function create(): View

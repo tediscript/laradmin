@@ -161,3 +161,102 @@ test('store defaults published to false when unchecked', function () {
     $post = Post::first();
     expect($post->published)->toBeFalse();
 });
+
+test('posts can be sorted by title ascending', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Beta Post']);
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Alpha Post']);
+
+    $response = $this->actingAs($user)->get('/admin/posts?sort_by=title&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['Alpha Post', 'Beta Post']);
+});
+
+test('posts can be sorted by title descending', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Alpha Post']);
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Beta Post']);
+
+    $response = $this->actingAs($user)->get('/admin/posts?sort_by=title&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['Beta Post', 'Alpha Post']);
+});
+
+test('posts can be searched by title', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Laravel Tips']);
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Vue Tricks']);
+
+    $response = $this->actingAs($user)->get('/admin/posts?search=Laravel');
+
+    $response->assertOk();
+    $response->assertSee('Laravel Tips');
+    $response->assertDontSee('Vue Tricks');
+});
+
+test('posts can be searched by body', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Post A', 'body' => 'Content about Laravel']);
+    Post::factory()->create(['user_id' => $user->id, 'title' => 'Post B', 'body' => 'Content about Vue']);
+
+    $response = $this->actingAs($user)->get('/admin/posts?search=Laravel');
+
+    $response->assertOk();
+    $response->assertSee('Post A');
+    $response->assertDontSee('Post B');
+});
+
+test('posts search shows empty state message', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+
+    $response = $this->actingAs($user)->get('/admin/posts?search=nonexistent');
+
+    $response->assertOk();
+    $response->assertSee('No posts found matching');
+});
+
+test('posts index ignores invalid sort parameters', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+    Post::factory()->count(3)->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->get('/admin/posts?sort_by=invalid_column&sort_direction=invalid');
+
+    $response->assertOk();
+    $response->assertSee('Posts');
+});
+
+test('posts can be sorted by author name ascending', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+    $authorB = User::factory()->create(['name' => 'Bob Author']);
+    $authorA = User::factory()->create(['name' => 'Alice Author']);
+    Post::factory()->create(['user_id' => $authorB->id, 'title' => 'Post by Bob']);
+    Post::factory()->create(['user_id' => $authorA->id, 'title' => 'Post by Alice']);
+
+    $response = $this->actingAs($admin)->get('/admin/posts?sort_by=user_name&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['Post by Alice', 'Post by Bob']);
+});
+
+test('posts can be sorted by author name descending', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+    $authorA = User::factory()->create(['name' => 'Alice Author']);
+    $authorB = User::factory()->create(['name' => 'Bob Author']);
+    Post::factory()->create(['user_id' => $authorA->id, 'title' => 'Post by Alice']);
+    Post::factory()->create(['user_id' => $authorB->id, 'title' => 'Post by Bob']);
+
+    $response = $this->actingAs($admin)->get('/admin/posts?sort_by=user_name&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['Post by Bob', 'Post by Alice']);
+});
