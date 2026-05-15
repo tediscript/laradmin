@@ -124,7 +124,7 @@
                                                 @endif
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
-                                                {{ $userItem->created_at->format('M d, Y') }}
+                                                @datetime($userItem->created_at)
                                             </td>
                                             <td class="py-4 text-right">
                                                 <div class="flex items-center justify-end gap-2">

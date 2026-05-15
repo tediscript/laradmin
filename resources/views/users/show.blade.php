@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="flex items-center gap-4 text-sm text-gray-500">
-                        <span>{{ $user->created_at->format('M d, Y') }}</span>
+                        <span>@datetime($user->created_at)</span>
                         @if($user->email_verified_at)
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                 Verified

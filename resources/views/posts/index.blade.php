@@ -120,7 +120,7 @@
                                                 @endif
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
-                                                {{ $post->created_at->format('M d, Y') }}
+                                                @datetime($post->created_at)
                                             </td>
                                             <td class="py-4 text-sm text-gray-600">
                                                 {{ $post->user->name }}

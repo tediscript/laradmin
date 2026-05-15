@@ -109,7 +109,7 @@
                                                 </span>
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
-                                                {{ $role->created_at->format('M d, Y') }}
+                                                @datetime($role->created_at)
                                             </td>
                                             <td class="py-4">
                                                 <span class="text-sm text-gray-600">

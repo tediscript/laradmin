@@ -108,7 +108,7 @@
                                                 </span>
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
-                                                {{ $permission->created_at->format('M d, Y') }}
+                                                @datetime($permission->created_at)
                                             </td>
                                             <td class="py-4">
                                                 <span class="text-sm text-gray-600">
