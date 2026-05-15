@@ -45,7 +45,7 @@ class PermissionSeeder extends Seeder
         $editor->givePermissionTo(['post.view', 'post.create', 'post.update']);
 
         // Assign admin role to default admin users
-        $adminEmails = [env('ADMIN_EMAIL', 'admin@example.com')];
+        $adminEmails = [env('INIT_ADMIN_EMAIL', 'admin@example.com')];
 
         foreach ($adminEmails as $email) {
             $user = User::where('email', $email)->first();
