@@ -13,9 +13,31 @@ class RoleController extends Controller
 {
     public function index(): View
     {
-        $roles = Role::with(['permissions', 'users'])->paginate(10);
+        $sortBy = request('sort_by', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+        $search = request('search');
 
-        return view('roles.index', compact('roles'));
+        $allowedSortColumns = ['name', 'created_at', 'permissions_count', 'users_count'];
+
+        if (! in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $roles = Role::query()
+            ->with(['permissions', 'users'])
+            ->withCount(['permissions', 'users'])
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate(10)
+            ->appends(request()->query());
+
+        return view('roles.index', compact('roles', 'sortBy', 'sortDirection', 'search'));
     }
 
     public function create(): View

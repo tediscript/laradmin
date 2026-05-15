@@ -122,3 +122,106 @@ test('permission edit page is displayed', function () {
 
     $response->assertOk();
 });
+
+test('permissions can be sorted by name ascending', function () {
+    Permission::firstOrCreate(['name' => 'beta.perm']);
+    Permission::firstOrCreate(['name' => 'alpha.perm']);
+    Permission::firstOrCreate(['name' => 'gamma.perm']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?sort_by=name&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['alpha.perm', 'beta.perm', 'gamma.perm']);
+});
+
+test('permissions can be sorted by name descending', function () {
+    Permission::firstOrCreate(['name' => 'beta.perm']);
+    Permission::firstOrCreate(['name' => 'alpha.perm']);
+    Permission::firstOrCreate(['name' => 'gamma.perm']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?sort_by=name&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['gamma.perm', 'beta.perm', 'alpha.perm']);
+});
+
+test('permissions can be searched by name', function () {
+    Permission::firstOrCreate(['name' => 'post.view']);
+    Permission::firstOrCreate(['name' => 'user.create']);
+    Permission::firstOrCreate(['name' => 'role.delete']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?search=post');
+
+    $response->assertOk();
+    $response->assertSee('post.view');
+    $response->assertDontSee('user.create');
+    $response->assertDontSee('role.delete');
+});
+
+test('permissions search with no results shows message', function () {
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?search=nonexistent');
+
+    $response->assertOk();
+    $response->assertSee('No permissions found matching');
+});
+
+test('permissions can be sorted by roles count ascending', function () {
+    $permA = Permission::create(['name' => 'sort.perm-a']);
+    $permB = Permission::create(['name' => 'sort.perm-b']);
+    $permC = Permission::create(['name' => 'sort.perm-c']);
+
+    $role1 = Role::create(['name' => 'sort-role-1']);
+    $role2 = Role::create(['name' => 'sort-role-2']);
+    $role3 = Role::create(['name' => 'sort-role-3']);
+
+    $permA->assignRole([$role1, $role2, $role3]);
+    $permB->assignRole([$role1]);
+    $permC->assignRole([$role1, $role2]);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?sort_by=roles_count&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['sort.perm-b', 'sort.perm-c', 'sort.perm-a']);
+});
+
+test('permissions can be sorted by roles count descending', function () {
+    $permA = Permission::create(['name' => 'sort.perm-a']);
+    $permB = Permission::create(['name' => 'sort.perm-b']);
+    $permC = Permission::create(['name' => 'sort.perm-c']);
+
+    $role1 = Role::create(['name' => 'sort-role-1']);
+    $role2 = Role::create(['name' => 'sort-role-2']);
+    $role3 = Role::create(['name' => 'sort-role-3']);
+
+    $permA->assignRole([$role1, $role2, $role3]);
+    $permB->assignRole([$role1]);
+    $permC->assignRole([$role1, $role2]);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?sort_by=roles_count&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['sort.perm-a', 'sort.perm-c', 'sort.perm-b']);
+});
+
+test('permissions invalid sort column defaults to created_at', function () {
+    Permission::firstOrCreate(['name' => 'test.sort']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/permissions?sort_by=invalid_column&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSee('test.sort');
+});

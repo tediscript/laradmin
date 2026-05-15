@@ -12,9 +12,31 @@ class PermissionController extends Controller
 {
     public function index(): View
     {
-        $permissions = Permission::with('roles')->paginate(10);
+        $sortBy = request('sort_by', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+        $search = request('search');
 
-        return view('permissions.index', compact('permissions'));
+        $allowedSortColumns = ['name', 'created_at', 'roles_count'];
+
+        if (! in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $permissions = Permission::query()
+            ->with('roles')
+            ->withCount(['roles'])
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate(10)
+            ->appends(request()->query());
+
+        return view('permissions.index', compact('permissions', 'sortBy', 'sortDirection', 'search'));
     }
 
     public function create(): View

@@ -130,3 +130,146 @@ test('role edit page is displayed', function () {
 
     $response->assertOk();
 });
+
+test('roles can be sorted by name ascending', function () {
+    Role::firstOrCreate(['name' => 'beta']);
+    Role::firstOrCreate(['name' => 'alpha']);
+    Role::firstOrCreate(['name' => 'gamma']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=name&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['alpha', 'beta', 'gamma']);
+});
+
+test('roles can be sorted by name descending', function () {
+    Role::firstOrCreate(['name' => 'beta']);
+    Role::firstOrCreate(['name' => 'alpha']);
+    Role::firstOrCreate(['name' => 'gamma']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=name&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['gamma', 'beta', 'alpha']);
+});
+
+test('roles can be searched by name', function () {
+    Role::firstOrCreate(['name' => 'manager']);
+    Role::firstOrCreate(['name' => 'supervisor']);
+    Role::firstOrCreate(['name' => 'editor']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?search=manag');
+
+    $response->assertOk();
+    $response->assertSee('manager');
+    $response->assertDontSee('supervisor');
+    $response->assertDontSee('editor');
+});
+
+test('roles search with no results shows message', function () {
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?search=nonexistent');
+
+    $response->assertOk();
+    $response->assertSee('No roles found matching');
+});
+
+test('roles can be sorted by permissions count ascending', function () {
+    $roleA = Role::create(['name' => 'role-a']);
+    $roleB = Role::create(['name' => 'role-b']);
+    $roleC = Role::create(['name' => 'role-c']);
+
+    $perm1 = Permission::firstOrCreate(['name' => 'test.perm1']);
+    $perm2 = Permission::firstOrCreate(['name' => 'test.perm2']);
+    $perm3 = Permission::firstOrCreate(['name' => 'test.perm3']);
+
+    $roleA->givePermissionTo([$perm1, $perm2, $perm3]);
+    $roleB->givePermissionTo([$perm1]);
+    $roleC->givePermissionTo([$perm1, $perm2]);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=permissions_count&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['role-b', 'role-c', 'role-a']);
+});
+
+test('roles can be sorted by permissions count descending', function () {
+    $roleA = Role::create(['name' => 'role-a']);
+    $roleB = Role::create(['name' => 'role-b']);
+    $roleC = Role::create(['name' => 'role-c']);
+
+    $perm1 = Permission::firstOrCreate(['name' => 'test.perm1']);
+    $perm2 = Permission::firstOrCreate(['name' => 'test.perm2']);
+    $perm3 = Permission::firstOrCreate(['name' => 'test.perm3']);
+
+    $roleA->givePermissionTo([$perm1, $perm2, $perm3]);
+    $roleB->givePermissionTo([$perm1]);
+    $roleC->givePermissionTo([$perm1, $perm2]);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=permissions_count&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['role-a', 'role-c', 'role-b']);
+});
+
+test('roles can be sorted by users count ascending', function () {
+    $roleA = Role::create(['name' => 'role-a']);
+    $roleB = Role::create(['name' => 'role-b']);
+    $roleC = Role::create(['name' => 'role-c']);
+
+    $roleA->users()->attach(User::factory()->create());
+    $roleA->users()->attach(User::factory()->create());
+    $roleA->users()->attach(User::factory()->create());
+    $roleB->users()->attach(User::factory()->create());
+    $roleC->users()->attach(User::factory()->create());
+    $roleC->users()->attach(User::factory()->create());
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=users_count&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['role-b', 'role-c', 'role-a']);
+});
+
+test('roles can be sorted by users count descending', function () {
+    $roleA = Role::create(['name' => 'role-a']);
+    $roleB = Role::create(['name' => 'role-b']);
+    $roleC = Role::create(['name' => 'role-c']);
+
+    $roleA->users()->attach(User::factory()->create());
+    $roleA->users()->attach(User::factory()->create());
+    $roleA->users()->attach(User::factory()->create());
+    $roleB->users()->attach(User::factory()->create());
+    $roleC->users()->attach(User::factory()->create());
+    $roleC->users()->attach(User::factory()->create());
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=users_count&sort_direction=desc');
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['role-a', 'role-c', 'role-b']);
+});
+
+test('roles invalid sort column defaults to created_at', function () {
+    Role::firstOrCreate(['name' => 'test-role']);
+
+    $response = $this
+        ->actingAs($this->admin)
+        ->get('/admin/roles?sort_by=invalid_column&sort_direction=asc');
+
+    $response->assertOk();
+    $response->assertSee('test-role');
+});
