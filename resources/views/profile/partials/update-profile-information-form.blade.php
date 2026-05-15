@@ -47,6 +47,32 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="timezone" :value="__('Timezone')" />
+            <select id="timezone" name="timezone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-700 focus:border-gray-700 text-sm">
+                @php
+                    $groupedTimezones = [];
+                    foreach (DateTimeZone::listIdentifiers(DateTimeZone::ALL) as $tz) {
+                        $parts = explode('/', $tz);
+                        $region = $parts[0];
+                        $groupedTimezones[$region][] = $tz;
+                    }
+                    ksort($groupedTimezones);
+                @endphp
+                <option value="" {{ ! $user->timezone ? 'selected' : '' }}>
+                    {{ config('app.timezone') }} (default)
+                </option>
+                @foreach ($groupedTimezones as $region => $timezones)
+                    <optgroup label="{{ $region }}">
+                        @foreach ($timezones as $tz)
+                            <option value="{{ $tz }}" {{ $user->timezone === $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                        @endforeach
+                    </optgroup>
+                @endforeach
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
