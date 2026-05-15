@@ -35,4 +35,23 @@ return [
         ],
     ],
 
+    'auth' => [
+        'password_login' => env('AUTH_PASSWORD_LOGIN', true),
+        'google' => env('AUTH_GOOGLE', true),
+        'oidc' => env('AUTH_OIDC', true),
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URL', '/login/google/callback'),
+    ],
+
+    'oidc' => [
+        'client_id' => env('OIDC_CLIENT_ID'),
+        'client_secret' => env('OIDC_CLIENT_SECRET'),
+        'redirect' => env('OIDC_REDIRECT_URI', '/login/oidc/callback'),
+        'base_url' => env('OIDC_BASE_URL'),
+    ],
+
 ];

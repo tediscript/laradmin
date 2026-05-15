@@ -7,7 +7,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "kovah/laravel-socialite-oidc": "^0.8.0",
         "laravel/framework": "^13.8",
+        "laravel/socialite": "^5.27",
         "laravel/tinker": "^3.0",
         "spatie/laravel-permission": "^7.4"
     },

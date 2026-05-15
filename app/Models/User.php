@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -38,5 +39,21 @@ class User extends Authenticatable
     public function displayTimezone(): string
     {
         return $this->timezone ?? config('app.timezone');
+    }
+
+    /**
+     * Get the social accounts for the user.
+     */
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
+     * Determine if the user has a password set.
+     */
+    public function getHasPasswordAttribute(): bool
+    {
+        return $this->password !== null;
     }
 }
