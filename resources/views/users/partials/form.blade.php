@@ -54,6 +54,33 @@
         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
     </div>
 
+    <div>
+        <x-input-label for="timezone" value="Timezone" />
+        <select id="timezone" name="timezone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-700 focus:border-gray-700 text-sm">
+            @php
+                $groupedTimezones = [];
+                foreach (DateTimeZone::listIdentifiers(DateTimeZone::ALL) as $tz) {
+                    $parts = explode('/', $tz);
+                    $region = $parts[0];
+                    $groupedTimezones[$region][] = $tz;
+                }
+                ksort($groupedTimezones);
+                $selectedTimezone = old('timezone', isset($user) && $user->timezone ? $user->timezone : '');
+            @endphp
+            <option value="" {{ ! $selectedTimezone ? 'selected' : '' }}>
+                {{ config('app.timezone') }} (default)
+            </option>
+            @foreach ($groupedTimezones as $region => $timezones)
+                <optgroup label="{{ $region }}">
+                    @foreach ($timezones as $tz)
+                        <option value="{{ $tz }}" {{ $selectedTimezone === $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                    @endforeach
+                </optgroup>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('timezone')" class="mt-2" />
+    </div>
+
     <div class="flex items-center gap-3">
         <input
             type="checkbox"

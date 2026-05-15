@@ -66,6 +66,7 @@
                                                 'name' => 'Name',
                                                 'email' => 'Email',
                                                 'email_verified_at' => 'Verified',
+                                                'timezone' => 'Timezone',
                                                 'created_at' => 'Date',
                                             ];
                                         @endphp
@@ -122,6 +123,9 @@
                                                         Unverified
                                                     </span>
                                                 @endif
+                                            </td>
+                                            <td class="py-4 text-sm text-gray-600">
+                                                {{ $userItem->timezone ?: config('app.timezone') }}
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
                                                 @datetime($userItem->created_at)

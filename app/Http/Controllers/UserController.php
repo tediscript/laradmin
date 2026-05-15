@@ -17,7 +17,7 @@ class UserController extends Controller
         $sortDirection = request('sort_direction', 'desc');
         $search = request('search');
 
-        $allowedSortColumns = ['name', 'email', 'email_verified_at', 'created_at'];
+        $allowedSortColumns = ['name', 'email', 'email_verified_at', 'timezone', 'created_at'];
 
         if (! in_array($sortBy, $allowedSortColumns)) {
             $sortBy = 'created_at';
@@ -56,6 +56,10 @@ class UserController extends Controller
 
         unset($validated['email_verified']);
 
+        if (isset($validated['timezone']) && $validated['timezone'] === '') {
+            $validated['timezone'] = null;
+        }
+
         User::create($validated);
 
         return redirect()->route('admin.users.index')
@@ -89,6 +93,10 @@ class UserController extends Controller
         }
 
         unset($validated['email_verified']);
+
+        if (isset($validated['timezone']) && $validated['timezone'] === '') {
+            $validated['timezone'] = null;
+        }
 
         $user->update($validated);
 

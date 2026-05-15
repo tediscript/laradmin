@@ -270,3 +270,97 @@ test('destroy deletes the user', function () {
 
     expect(User::find($targetUser->id))->toBeNull();
 });
+
+test('store creates user with timezone', function () {
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
+        'name' => 'TZ User',
+        'email' => 'tz@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'timezone' => 'Asia/Jakarta',
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $newUser = User::where('email', 'tz@example.com')->first();
+    expect($newUser->timezone)->toBe('Asia/Jakarta');
+});
+
+test('store creates user without timezone', function () {
+    $this->actingAs($this->admin)->post('/admin/users', [
+        'name' => 'No TZ User',
+        'email' => 'notz@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ]);
+
+    $newUser = User::where('email', 'notz@example.com')->first();
+    expect($newUser->timezone)->toBeNull();
+});
+
+test('store validates invalid timezone', function () {
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
+        'name' => 'Bad TZ',
+        'email' => 'badtz@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'timezone' => 'Invalid/Timezone',
+    ]);
+
+    $response->assertSessionHasErrors(['timezone']);
+});
+
+test('update can change timezone', function () {
+    $targetUser = User::factory()->create(['timezone' => null]);
+
+    $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
+        'name' => $targetUser->name,
+        'email' => $targetUser->email,
+        'password' => '',
+        'timezone' => 'America/New_York',
+    ]);
+
+    $targetUser->refresh();
+    expect($targetUser->timezone)->toBe('America/New_York');
+});
+
+test('update can clear timezone', function () {
+    $targetUser = User::factory()->create(['timezone' => 'Asia/Jakarta']);
+
+    $this->actingAs($this->admin)->put("/admin/users/{$targetUser->id}", [
+        'name' => $targetUser->name,
+        'email' => $targetUser->email,
+        'password' => '',
+        'timezone' => '',
+    ]);
+
+    $targetUser->refresh();
+    expect($targetUser->timezone)->toBeNull();
+});
+
+test('index displays timezone column', function () {
+    User::factory()->create(['timezone' => 'Asia/Jakarta']);
+
+    $response = $this->actingAs($this->admin)->get('/admin/users');
+
+    $response->assertOk();
+    $response->assertSee('Asia/Jakarta');
+    $response->assertSee('Timezone');
+});
+
+test('create form displays timezone selector', function () {
+    $response = $this->actingAs($this->admin)->get('/admin/users/create');
+
+    $response->assertOk();
+    $response->assertSee('Timezone');
+    $response->assertSee(config('app.timezone').' (default)');
+});
+
+test('edit form displays timezone selector with current value', function () {
+    $targetUser = User::factory()->create(['timezone' => 'Europe/London']);
+
+    $response = $this->actingAs($this->admin)->get("/admin/users/{$targetUser->id}/edit");
+
+    $response->assertOk();
+    $response->assertSee('Europe/London');
+});

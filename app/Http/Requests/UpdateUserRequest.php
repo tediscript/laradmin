@@ -23,6 +23,7 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->user)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'timezone' => ['nullable', 'string', 'in:'.implode(',', \DateTimeZone::listIdentifiers(\DateTimeZone::ALL))],
             'email_verified' => ['nullable', 'boolean'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', 'in:'.Role::pluck('name')->implode(',')],
