@@ -43,7 +43,9 @@ class UserController extends Controller
 
     public function create(): View
     {
-        return view('users.create');
+        $roles = Role::orderBy('name')->get();
+
+        return view('users.create', compact('roles'));
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
@@ -60,7 +62,11 @@ class UserController extends Controller
             $validated['timezone'] = null;
         }
 
-        User::create($validated);
+        $roles = $validated['roles'] ?? [];
+        unset($validated['roles']);
+
+        $user = User::create($validated);
+        $user->syncRoles($roles);
 
         return redirect()->route('admin.users.index')
             ->with('status', 'User created successfully.');

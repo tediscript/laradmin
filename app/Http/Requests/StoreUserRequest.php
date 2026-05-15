@@ -22,6 +22,8 @@ class StoreUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'timezone' => ['nullable', 'string', 'in:'.implode(',', \DateTimeZone::listIdentifiers(\DateTimeZone::ALL))],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
             'email_verified' => ['nullable', 'boolean'],
         ];
     }

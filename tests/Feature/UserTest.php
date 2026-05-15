@@ -364,3 +364,49 @@ test('edit form displays timezone selector with current value', function () {
     $response->assertOk();
     $response->assertSee('Europe/London');
 });
+
+test('create form displays roles checkboxes', function () {
+    Role::create(['name' => 'editor']);
+    Role::create(['name' => 'manager']);
+
+    $response = $this->actingAs($this->admin)->get('/admin/users/create');
+
+    $response->assertOk();
+    $response->assertSee('editor');
+    $response->assertSee('manager');
+});
+
+test('store can assign roles to user on creation', function () {
+    Role::create(['name' => 'editor']);
+    Role::create(['name' => 'manager']);
+
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
+        'name' => 'Role User',
+        'email' => 'roleuser@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'roles' => ['editor', 'manager'],
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $newUser = User::where('email', 'roleuser@example.com')->first();
+    expect($newUser)->not->toBeNull();
+    expect($newUser->hasRole('editor'))->toBeTrue();
+    expect($newUser->hasRole('manager'))->toBeTrue();
+});
+
+test('store creates user without roles when none selected', function () {
+    $response = $this->actingAs($this->admin)->post('/admin/users', [
+        'name' => 'No Role User',
+        'email' => 'norole@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ]);
+
+    $response->assertRedirect('/admin/users');
+
+    $newUser = User::where('email', 'norole@example.com')->first();
+    expect($newUser)->not->toBeNull();
+    expect($newUser->roles)->toBeEmpty();
+});
