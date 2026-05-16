@@ -118,15 +118,15 @@ User clicks "Login with Google" or "Login with OIDC"
 - Account merge conflict resolution (e.g., email changed at provider)
 
 ## Acceptance Criteria
-- [ ] User can log in via Google
-- [ ] User can log in via generic OIDC (Authentik)
-- [ ] Existing user with matching email gets OIDC provider linked automatically
-- [ ] New user is created when no matching email exists
-- [ ] OIDC users have `email_verified_at` set automatically
-- [ ] OIDC-only user sees "Set Password" form (no current password field)
-- [ ] User with password sees "Update Password" form (with current password field)
-- [ ] Setting `AUTH_PASSWORD_LOGIN=false` hides password login + registration
-- [ ] Setting `AUTH_GOOGLE=false` hides Google button + disables route
-- [ ] Setting `AUTH_OIDC=false` hides OIDC button + disables route
-- [ ] All three disabled shows "Login is disabled" message
-- [ ] Tests cover all auth flows and toggle scenarios
+- [x] User can log in via Google
+- [x] User can log in via generic OIDC (Authentik)
+- [x] Existing user with matching email gets OIDC provider linked automatically
+- [x] New user is created when no matching email exists
+- [x] OIDC users have `email_verified_at` set automatically
+- [x] OIDC-only user sees "Set Password" form (no current password field)
+- [x] User with password sees "Update Password" form (with current password field)
+- [x] Setting `AUTH_PASSWORD_LOGIN=false` hides password login + registration
+- [x] Setting `AUTH_GOOGLE=false` hides Google button + disables route
+- [x] Setting `AUTH_OIDC=false` hides OIDC button + disables route
+- [x] All three disabled shows "Login is disabled" message
+- [x] Tests cover all auth flows and toggle scenarios
