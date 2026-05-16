@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-#[Fillable(['title', 'slug', 'body', 'published', 'user_id'])]
+#[Fillable(['title', 'slug', 'body', 'published', 'published_at', 'user_id'])]
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
@@ -19,6 +19,7 @@ class Post extends Model
     {
         return [
             'published' => 'boolean',
+            'published_at' => 'datetime',
         ];
     }
 
@@ -33,11 +34,19 @@ class Post extends Model
             if (empty($post->slug)) {
                 $post->slug = $post->generateUniqueSlug($post->title);
             }
+
+            if ($post->published && is_null($post->published_at)) {
+                $post->published_at = now();
+            }
         });
 
         static::updating(function (Post $post) {
             if ($post->isDirty('title') && ! $post->isDirty('slug')) {
                 $post->slug = $post->generateUniqueSlug($post->title, $post->id);
+            }
+
+            if ($post->isDirty('published') && $post->published && ! $post->isDirty('published_at') && is_null($post->getOriginal('published_at'))) {
+                $post->published_at = now();
             }
         });
     }

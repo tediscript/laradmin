@@ -24,6 +24,7 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'published' => true,
+            'published_at' => now(),
         ]);
     }
 
@@ -31,6 +32,7 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'published' => false,
+            'published_at' => null,
         ]);
     }
 }
