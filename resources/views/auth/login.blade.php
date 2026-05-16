@@ -19,6 +19,17 @@
         <!-- Social Login -->
         @if($anySocialEnabled)
             <div class="mb-6 space-y-3">
+                @if($oidcEnabled)
+                    <a href="{{ route('social.login.redirect', 'oidc') }}"
+                       class="inline-flex items-center justify-center w-full px-4 py-2 font-semibold text-xs uppercase tracking-widest transition duration-150 bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 rounded-md">
+                        <svg class="w-4 h-4 me-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                        </svg>
+                        Login with OIDC
+                    </a>
+                @endif
+
                 @if($googleEnabled)
                     <a href="{{ route('social.login.redirect', 'google') }}"
                        class="inline-flex items-center justify-center w-full px-4 py-2 font-semibold text-xs uppercase tracking-widest transition duration-150 bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 rounded-md">
@@ -29,17 +40,6 @@
                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                         </svg>
                         Login with Google
-                    </a>
-                @endif
-
-                @if($oidcEnabled)
-                    <a href="{{ route('social.login.redirect', 'oidc') }}"
-                       class="inline-flex items-center justify-center w-full px-4 py-2 font-semibold text-xs uppercase tracking-widest transition duration-150 bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 rounded-md">
-                        <svg class="w-4 h-4 me-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                        </svg>
-                        Login with OIDC
                     </a>
                 @endif
             </div>
