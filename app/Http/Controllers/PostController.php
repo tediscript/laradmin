@@ -16,7 +16,7 @@ class PostController extends Controller
         $sortDirection = request('sort_direction', 'desc');
         $search = request('search');
 
-        $allowedSortColumns = ['title', 'published', 'created_at', 'user_name'];
+        $allowedSortColumns = ['title', 'published', 'published_at', 'created_at', 'user_name'];
 
         if (! in_array($sortBy, $allowedSortColumns)) {
             $sortBy = 'created_at';

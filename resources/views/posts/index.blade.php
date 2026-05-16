@@ -65,6 +65,7 @@
                                             $columns = [
                                                 'title' => 'Title',
                                                 'published' => 'Status',
+                                                'published_at' => 'Published At',
                                                 'created_at' => 'Date',
                                                 'user_name' => 'Author',
                                             ];
@@ -118,6 +119,9 @@
                                                         Draft
                                                     </span>
                                                 @endif
+                                            </td>
+                                            <td class="py-4 text-sm text-gray-500">
+                                                {{ $post->published_at ? $post->published_at->format('M j, Y') : '—' }}
                                             </td>
                                             <td class="py-4 text-sm text-gray-500">
                                                 @datetime($post->created_at)

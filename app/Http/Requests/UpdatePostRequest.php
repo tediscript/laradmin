@@ -17,6 +17,7 @@ class UpdatePostRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
             'published' => ['boolean'],
+            'published_at' => ['nullable', 'date'],
         ];
     }
 }

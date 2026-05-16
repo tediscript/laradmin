@@ -26,6 +26,18 @@
         <x-input-error :messages="$errors->get('body')" class="mt-2" />
     </div>
 
+    <div>
+        <x-input-label for="published_at" value="Published At" />
+        <x-text-input
+            id="published_at"
+            name="published_at"
+            type="datetime-local"
+            class="mt-1 block w-full"
+            :value="old('published_at', $post?->published_at?->format('Y-m-d\\TH:i') ?? '')"
+        />
+        <x-input-error :messages="$errors->get('published_at')" class="mt-2" />
+    </div>
+
     <div class="flex items-center gap-3">
         <input type="hidden" name="published" value="0" />
         <input
