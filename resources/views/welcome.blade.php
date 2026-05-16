@@ -46,7 +46,7 @@
                 @if (Route::has('login'))
                     <nav class="flex items-center gap-3">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors">
+                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors">
                                 Dashboard
                             </a>
                         @else
@@ -82,7 +82,7 @@
                 <div class="mt-8 flex flex-col sm:flex-row items-center gap-3">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/10">
+                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/10">
                                 Go to Dashboard
                                 <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                             </a>
