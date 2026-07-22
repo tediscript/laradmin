@@ -72,9 +72,10 @@ Compiles and bundles all frontend assets via Vite for production.
 Standard Laravel 13 layout. Key additions:
 
 ```
-.clinerules/          — Agent skills config (Cline AI)
-docs/agents/          — Agent documentation (domain, issues, triage)
-CONTEXT.md            — Domain context for AI agents
+.pi/                 — Pi config: settings, skills, prompts
+AGENTS.md            — Project instructions (Boost + agent workflow)
+docs/agents/         — Agent documentation (domain, issues, triage)
+CONTEXT.md           — Domain context for AI agents
 ```
 
 Architectural decisions live in `docs/adr/`.

@@ -10,7 +10,7 @@ Issue: **$1** (e.g. `2` or `#2`). Strip a leading `#`.
 
 > This prompt owns the **state mechanics** only (claim, branch, draft PR, label
 > flips, audit handoff). The **build** is delegated to the **implement** skill —
-> `.agents/skills/implement/SKILL.md` — which drives tdd at pre-agreed seams and
+> `.pi/skills/implement/SKILL.md` — which drives tdd at pre-agreed seams and
 > the close-out self-review (`/code-review`). That skill is hidden from
 > auto-discovery (`disable-model-invocation: true`), so step 3 loads it explicitly
 > by path. Same seam as `/audit`: `/audit` runs the *independent* code-review on
@@ -44,7 +44,7 @@ Issue: **$1** (e.g. `2` or `#2`). Strip a leading `#`.
   `/code-review` comment and apply its **fix-in-PR** items (the maker-checker
   handoff) before any new work.
 - **Delegate the build:** load and follow the **implement** skill by reading
-  `.agents/skills/implement/SKILL.md` explicitly (it is hidden from
+  `.pi/skills/implement/SKILL.md` explicitly (it is hidden from
   auto-discovery, so it will NOT appear in the available-skills list — load it by
   path). The skill owns: tdd at pre-agreed seams, regular typechecking, the full
   test suite, and the close-out `/code-review`. Do not re-drive tdd or code-review

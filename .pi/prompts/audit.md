@@ -11,7 +11,7 @@ Issue: **$1** (e.g. `2` or `#2`). Strip a leading `#`.
 > This prompt owns the **state mechanics** only (claim, checkout PR, triage
 > findings into fix-in-PR vs deferred, post the verdict to the PR, flip the
 > terminal label). The **review** is delegated to the **code-review** skill —
-> `.agents/skills/code-review/SKILL.md` — with fixed point `main`. This is the
+> `.pi/skills/code-review/SKILL.md` — with fixed point `main`. This is the
 > *independent* audit run; `/implement`'s own code-review pass is the internal
 > self-review.
 
@@ -35,7 +35,7 @@ Issue: **$1** (e.g. `2` or `#2`). Strip a leading `#`.
   `gh pr view <PR-NUMBER> --json body --jq .body`.
 
 ## 2. Review (delegate to the skill)
-- Load and follow the **code-review** skill: `.agents/skills/code-review/SKILL.md`,
+- Load and follow the **code-review** skill: `.pi/skills/code-review/SKILL.md`,
   passing **fixed point `main`** (the skill captures `git diff main...HEAD`
   three-dot itself, and emits the `## Standards` / `## Spec` reports).
 

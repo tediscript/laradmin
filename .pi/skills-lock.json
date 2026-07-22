@@ -93,7 +93,7 @@
     },
     "smart-commit": {
       "sourceType": "local",
-      "skillPath": ".agents/skills/smart-commit/SKILL.md"
+      "skillPath": ".pi/skills/smart-commit/SKILL.md"
     },
     "tdd": {
       "source": "mattpocock/skills",
