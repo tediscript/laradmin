@@ -28,9 +28,10 @@ Reusable starter kit for building admin-heavy web applications. Primarily admin 
 Standard Laravel 13 layout. Key additions:
 
 ```
-.clinerules/          — Agent skills config (Cline AI)
-docs/agents/          — Agent documentation (domain, issues, triage)
-CONTEXT.md            — This file. Domain context for AI agents.
+.pi/                 — Pi config: settings, skills, prompts
+AGENTS.md            — Project instructions (Boost + agent workflow)
+docs/agents/         — Agent documentation (domain, issues, triage)
+CONTEXT.md           — This file. Domain context for AI agents.
 ```
 
 ## Getting started
