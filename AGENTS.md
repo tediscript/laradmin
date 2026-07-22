@@ -103,3 +103,17 @@ Domain-specific skills in `**/skills/**`. Activate when working in that domainâ€
 - Run: `php artisan test --compact`. Filter: `--filter=testName`.
 - Do NOT delete tests without approval.
 </laravel-boost-guidelines>
+
+## Agent skills
+
+### Issue tracker
+
+GitHub issues in `tediscript/laradmin` via `gh`. A feature's PRD is a `prd`-labelled parent issue; implementation work is child sub-issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`), applied as GitHub labels and lazy-created on first use. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
