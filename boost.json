@@ -1,6 +1,6 @@
 {
     "agents": [
-        "cline"
+        "pi"
     ],
     "cloud": false,
     "guidelines": true,
@@ -9,6 +9,7 @@
     "sail": false,
     "skills": [
         "laravel-best-practices",
+        "socialite-development",
         "pest-testing",
         "tailwindcss-development"
     ]
