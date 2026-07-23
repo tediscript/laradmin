@@ -34,34 +34,6 @@ docs/agents/         — Agent documentation (domain, issues, triage)
 CONTEXT.md           — This file. Domain context for AI agents.
 ```
 
-## Getting started
-
-### Host (no Docker)
-
-```bash
-composer install
-npm install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-npm run build
-composer dev   # artisan serve + queue:listen + pail + Vite
-```
-
-### Docker (Laravel Sail)
-
-```bash
-cp .env.example .env
-./vendor/bin/sail up      # builds image, bootstraps node_modules, runs composer dev
-./vendor/bin/sail artisan migrate
-```
-
-Common in-container commands: `./vendor/bin/sail test`, `./vendor/bin/sail
-artisan …`, `./vendor/bin/sail tinker`, `./vendor/bin/sail npm …`. Add the
-usual `alias sail='./vendor/bin/sail'` to your shell to use the bare `sail`
-form. sqlite + `storage/logs` persist on the host via the bind mount. See
-`docs/adr/0004-adopt-laravel-sail.md`.
-
 ## Decisions log
 
 See `docs/adr/` for architectural decisions (created as needed).

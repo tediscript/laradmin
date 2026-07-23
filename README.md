@@ -67,6 +67,56 @@ make build
 
 Compiles and bundles all frontend assets via Vite for production.
 
+## Docker (Laravel Sail)
+
+Prefer containers? This project ships a **sqlite-only Laravel Sail** setup where every common operation runs inside the container. The host workflow above stays the default; Sail is an equal alternative, not an afterthought.
+
+> **How this differs from stock Sail.** A default `sail:install` brings up php-fpm plus MySQL/Redis/mailpit and friends. This project overrides two things (see [ADR #0004](docs/adr/0004-adopt-laravel-sail.md)):
+>
+> - The app container runs this project's **`composer dev`** orchestration (serve + queue + pail + Vite) instead of php-fpm, so `sail up` starts the same stack as the host.
+> - There is **no database service** — the project is sqlite-only, and the sqlite file plus `storage/logs` persist on the host via the bind mount. A one-shot `node-setup` service bootstraps a Linux-native `node_modules` volume so the host and container don't fight over platform-specific native binaries.
+
+### Bootstrap
+
+The Sail CLI lives at `vendor/bin/sail`, so two steps run on the host first to avoid a container↔env circular dependency:
+
+```bash
+composer install                      # on the host — provides vendor/bin/sail
+cp .env.example .env
+php artisan key:generate             # on the host — the container reads .env, so it must exist first
+./vendor/bin/sail up -d              # builds the image, bootstraps node_modules, runs composer dev
+./vendor/bin/sail artisan migrate
+```
+
+Tip — alias it once and use the bare `sail` form everywhere below:
+
+```bash
+alias sail='./vendor/bin/sail'
+```
+
+### Cheat-sheet (Sail-only)
+
+The host commands above map directly onto Sail's canonical names:
+
+| You want to…              | Sail command                          |
+|---------------------------|---------------------------------------|
+| Start everything          | `sail up` / `sail up -d`              |
+| Stop                      | `sail stop`                           |
+| Run the test suite        | `sail test` (or `sail artisan test`)  |
+| Run migrations            | `sail artisan migrate`                |
+| Fresh + seed the database | `sail artisan migrate:fresh --seed`   |
+| Drop into tinker          | `sail tinker`                         |
+| Run any Artisan command   | `sail artisan …`                      |
+| Run an npm script         | `sail npm …`                          |
+
+Notes:
+
+- `sail up` runs the **full `composer dev` stack** (serve + queue + pail + Vite) — there is no separate `sail dev`.
+- Use **`sail stop`**, not `sail down` — `stop` keeps the container around for a fast next `sail up`, and your sqlite file and logs persist on the host regardless.
+- Use **`sail artisan migrate:fresh --seed`** — Sail has no `sail fresh` alias.
+
+For anything beyond this cheat-sheet (xdebug, `sail share`, database CLIs, the full command surface), see the [official Laravel Sail documentation](https://laravel.com/docs/sail).
+
 ## Project Structure
 
 Standard Laravel 13 layout. Key additions:
