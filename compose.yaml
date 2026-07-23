@@ -1,0 +1,88 @@
+# Laravel Sail — sqlite-only Docker dev environment.
+#
+# Differs from Sail's default in two intentional ways (see
+# docs/adr/0004-adopt-laravel-sail.md):
+#   1. No database/cache/mail services — this project is sqlite-only, and the
+#      sqlite file + storage/logs live in the bind-mounted project dir, so they
+#      persist on the host across `sail stop` / `sail up`.
+#   2. The app container runs the existing `composer dev` orchestration
+#      (artisan serve + queue:listen + pail + vite) instead of Sail's default
+#      php-fpm, preserving the one-command DX for both host and container.
+# For more information: https://laravel.com/docs/sail
+
+services:
+    laravel.test:
+        build:
+            context: './vendor/laravel/sail/runtimes/8.5'
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: 'sail-8.5/app'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-8000}:8000'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+        volumes:
+            - '.:/var/www/html'
+            # Isolate the container's node_modules from the host's. The host
+            # (e.g. macOS arm64) and the container (Linux) need different
+            # native binaries for Vite/rolldown/lightningcss/Tailwind; sharing
+            # one tree breaks whichever platform didn't install it. The named
+            # volume is populated by the `node-setup` one-shot below.
+            - 'sail-node-modules:/var/www/html/node_modules'
+        networks:
+            - sail
+        # Run the project's normal dev orchestration (serve + queue + pail +
+        # vite) instead of Sail's php-fpm. Sail's `start-container` entrypoint
+        # drops privileges to the `sail` user via gosu before exec'ing this.
+        command: 'composer dev'
+        depends_on:
+            node-setup:
+                condition: service_completed_successfully
+
+    # One-shot bootstrap: ensures a Linux-native node_modules exists in the
+    # named volume before the app starts. Runs as root only to chown the empty
+    # volume; `npm ci` runs as the sail user. Skipped on warm starts once vite is
+    # present. Uses `npm ci` (not `npm install`) so the bind-mounted
+    # package-lock.json is never rewritten.
+    node-setup:
+        image: 'sail-8.5/app'
+        build:
+            context: './vendor/laravel/sail/runtimes/8.5'
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        user: root
+        entrypoint: []
+        environment:
+            WWWUSER: '${WWWUSER}'
+            WWWGROUP: '${WWWGROUP}'
+        volumes:
+            - '.:/var/www/html'
+            - 'sail-node-modules:/var/www/html/node_modules'
+        networks:
+            - sail
+        command:
+            - /usr/bin/bash
+            - -c
+            - |
+                usermod -u $${WWWUSER:-1000} sail
+                if [ ! -x /var/www/html/node_modules/.bin/vite ]; then
+                    chown -R sail:sail /var/www/html/node_modules
+                    gosu sail npm ci --no-audit --no-fund
+                fi
+
+networks:
+    sail:
+        driver: bridge
+
+volumes:
+    sail-node-modules:
+        driver: local
