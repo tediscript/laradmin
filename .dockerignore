@@ -1,0 +1,7 @@
+# Keep the build context small. Source is bind-mounted at runtime, so these
+# never need to be COPYied into the dev image.
+/vendor
+/node_modules
+/.git
+/storage/logs/*
+/.scratch

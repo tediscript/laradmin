@@ -1,0 +1,31 @@
+# Dev environment. `docker compose up` runs `composer dev`, which starts
+# artisan serve + queue + pail + vite via the existing concurrently script.
+# Source is bind-mounted so storage/logs/laravel.log and the sqlite DB persist
+# on the host. See https://github.com/tediscript/laradmin/issues/1
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: laradmin-dev
+    command: composer dev
+    init: true
+    volumes:
+      - .:/var/www/html
+      # Vite 8 (rolldown) ships platform-specific native binaries. The host
+      # node_modules (e.g. macOS arm64) cannot satisfy the Linux container, so
+      # the container keeps its own node_modules in a named volume. The
+      # entrypoint runs `npm ci` on first start (then it is cached).
+      - node_modules:/var/www/html/node_modules
+    ports:
+      - "8000:8000" # php artisan serve
+      - "5173:5173" # vite dev server / HMR
+    environment:
+      COMPOSER_MEMORY_LIMIT: "-1"
+    tty: true
+
+volumes:
+  node_modules:

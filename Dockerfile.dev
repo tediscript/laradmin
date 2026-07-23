@@ -1,0 +1,53 @@
+# Dev-only image used by docker-compose.yml.
+# Single PHP process: `composer dev` runs `php artisan serve` directly
+# (no nginx / php-fpm in dev). See https://github.com/tediscript/laradmin/issues/1
+FROM php:8.5-cli-bookworm
+
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Tools needed by composer/git and the Node installer, plus procps (provides
+# `ps`) so concurrently's --kill-others can reap child processes on shutdown.
+# The base image already ships every Laravel PHP extension pre-enabled - pdo,
+# pdo_sqlite, mbstring, xml, dom, fileinfo, curl, plus ctype, filter, hash,
+# openssl, pcre, session, tokenizer - and the lexbor module backing dom's HTML5
+# support (verified via `php -m`). So no other docker-php-ext-install is needed.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git curl zip unzip ca-certificates procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# pcntl is not enabled in the base image, but `composer dev` runs
+# `php artisan pail`, which requires pcntl_fork.
+RUN docker-php-ext-install pcntl
+
+# Composer (official image, multi-stage copy - no installer script needed).
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Node.js LTS + npm: `composer dev` runs `npm run dev` (Vite).
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+
+# Non-root dev user with a parameterizable UID (default 1000) so bind-mounted
+# files stay writable on Linux hosts. macOS Docker Desktop maps ownership itself.
+RUN groupadd --gid "${USER_GID}" app \
+    && useradd --uid "${USER_UID}" --gid "${USER_GID}" --create-home --shell /bin/bash app
+
+# Pre-create node_modules owned by app. docker-compose mounts a named volume
+# here; Docker initializes a new named volume from this image path, so making
+# it app-owned keeps the volume writable for the non-root user (otherwise it
+# defaults to root and `npm ci` fails with EACCES).
+RUN mkdir -p /var/www/html/node_modules \
+    && chown -R app:app /var/www/html/node_modules
+
+# Bootstrap entrypoint: ensure deps + APP_KEY are present, then exec the command.
+# Idempotent - zero overhead once vendor/, node_modules/, and APP_KEY exist.
+COPY docker-entrypoint.dev.sh /usr/local/bin/docker-entrypoint.dev.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.dev.sh
+
+USER app
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.dev.sh"]
+CMD ["composer", "dev"]

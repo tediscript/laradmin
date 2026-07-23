@@ -1,4 +1,4 @@
-.PHONY: setup dev test build serve migrate fresh clean
+.PHONY: setup dev test build serve migrate fresh clean docker-dev
 
 # First-time project setup
 setup:
@@ -40,3 +40,7 @@ clean:
 	php artisan view:clear
 	php artisan cache:clear
 	php artisan clear-compiled
+
+# Start the Docker dev environment (Dockerfile.dev + docker-compose.yml)
+docker-dev:
+	docker compose up
