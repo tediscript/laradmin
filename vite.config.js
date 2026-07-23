@@ -8,4 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        // Bind on all interfaces so Vite's dev server / HMR is reachable from
+        // the host browser when running inside the Sail container.
+        host: '0.0.0.0',
+    },
 });
